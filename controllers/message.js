@@ -14,7 +14,14 @@ exports.showSendMessage = function(request, response) {
 
 // Handle a form POST to send a message to a given number
 exports.sendMessage = function(request, response) {
-
+    client.messages.create({ 
+        to: cfg.myNumber, 
+        from: cfg.twilioNumber, 
+        body: req.body.message, 
+        mediaUrl: "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",  
+    }, function(err, message) { 
+        console.log(message.sid); 
+    });
 };
 
 // Show a page displaying text/picture messages that have been sent to this
