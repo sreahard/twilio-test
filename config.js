@@ -35,7 +35,7 @@ cfg.myNumber = process.env.MY_NUMBER;
 
 // MongoDB connection string - MONGO_URL is for local dev,
 // MONGOLAB_URI is for the MongoLab add-on for Heroku deployment
-cfg.mongoUrl = process.env.MONGOLAB_URI || process.env.MONGO_URL ? process.env.MONGO_URL : "mongodb://localhost"
+cfg.mongoUrl = process.env.MONGODB_URI || process.env.MONGO_URL || "mongodb://localhost"
 
 // Export configuration object
 module.exports = cfg;
