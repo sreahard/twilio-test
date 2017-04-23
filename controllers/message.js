@@ -1,8 +1,8 @@
 var twilio = require('twilio');
-var config = require('../config');
+var cfg = require('../config');
 
 // Create an authenticated Twilio REST API client
-var client = twilio(config.accountSid, config.authToken);
+var client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 // Render a form that will allow the user to send a text (or picture) message 
 // to a phone number they entered.
@@ -15,19 +15,26 @@ exports.showSendMessage = function(request, response) {
 // Handle a form POST to send a message to a given number
 exports.sendMessage = function(request, response) {
     client.messages.create({ 
-        to: cfg.myNumber, 
-        from: cfg.twilioNumber, 
-        body: req.body.message, 
+        to: "+14062405245", 
+        from: "+15005550006", 
+        body: request.body.message, 
         mediaUrl: "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",  
     }, function(err, message) { 
-        console.log(message.sid); 
+        if(err){
+            console.log(err);
+        } else {
+            console.log('message sid is: ', message.sid);
+            response.redirect('/message/send')
+        }
     });
 };
 
 // Show a page displaying text/picture messages that have been sent to this
 // web application, which we have stored in the database
 exports.showReceiveMessage = function(request, response) {
-
+    response.render('receiveMessage', {
+        title: 'Sending Messages with Twilio'
+    });
 };
 
 // Handle a POST request from Twilio for an incoming message

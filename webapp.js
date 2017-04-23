@@ -46,8 +46,8 @@ app.use(function(err, request, response, next) {
     console.error('An application error has occurred:');
     console.error(err);
     console.error(err.stack);
-    // response.status(500);
-    // response.sendFile(path.join(__dirname, 'public', '500.html'));
+    response.status(500);
+    response.sendFile(path.join(__dirname, 'public', '500.html'));
 });
 
 // Export Express app
