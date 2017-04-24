@@ -13,5 +13,4 @@ var app = require('./webapp');
 var server = http.createServer(app);
 server.listen(config.port, function() {
     console.log('Express server listening on *:' + config.port);
-    console.log('SID is' + process.env.TWILIO_ACCOUNT_SID)
 });

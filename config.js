@@ -1,3 +1,5 @@
+require('dotenv').load();
+
 var cfg = {};
 
 // HTTP Port to run our web application

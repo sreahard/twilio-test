@@ -7,6 +7,8 @@ var morgan = require('morgan');
 var config = require('./config');
 require('dotenv').load();
 
+var messageModel = require('./models/Message')
+
 // Create Express web app
 var app = express();
 app.set('view engine', 'jade');

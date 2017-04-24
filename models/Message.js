@@ -6,6 +6,7 @@ var MessageSchema = new Schema({
   from: String,
   body: String,
   mediaUrl: String,
+  SID: String,
 });
 
 module.exports = mongoose.model('Message', MessageSchema);
