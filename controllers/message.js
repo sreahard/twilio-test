@@ -42,60 +42,48 @@ exports.sendMessage = function(req, res) {
 
 // Show a page displaying text/picture messages that have been sent to this
 // web application, which we have stored in the database
-exports.showReceiveMessage = function(request, response) {
-    response.render('receiveMessage', {
-        title: 'Sending Messages with Twilio'
-    });
+exports.showReceiveMessage = function(req, res) {
+    var twiml = new twilio.TwimlResponse();
+    var body = req.body.Body
+    var from = req.body.From
+    if (req.query.Body.toLowerCase() == 'hello') {
+        console.log('get sucess: ', req.query.Body.test(/hello/))
+        twiml.message('Hi!');
+    } else if (req.query.Body.toLowerCase() == 'bye') {
+        twiml.message('Goodbye');
+    } else {
+        twiml.message('No Body param match, Twilio sends this in the request to your server.');
+    }
+    mongoose.model('Message').create({
+        from: req.body.Body, 
+        body: req.body.Body,
+        SID: req.body.Body,
+    })
+    res.writeHead(200, {'Content-Type': 'text/xml'});
+    res.end(twiml.toString());
 };
 
 // Handle a POST request from Twilio for an incoming message
 exports.receiveMessageWebhook = function(req, res) {
-    // if (req.method == 'POST') {
-    //     var body = '';
+    var twiml = new twilio.TwimlResponse();
+    var body = req.body.Body
+    var from = req.body.From
 
-    //     req.on('data', function (data) {
-    //         body += data;
-    //     });
-
-    //     req.on('end', function () {
-
-    //         var POST = qs.parse(body);
-    //         // use POST
-
-    //         //validate incoming request is from twilio
-    //         var token = config.authToken,
-    //             header = req.headers['x-twilio-signature'];
-
-    //         console.log('headers: '+ JSON.stringify(req.headers));
-
-    //         console.log('Got Twilio Header: '+header);
-    //         console.log('Got POST params: '+JSON.stringify(POST));
-
-    //         if (twilio.validateRequest(token, header, 'http://twilio-raw.herokuapp.com', POST)) {
-    //             //generate a TwiML response
-    //             var resp = new twilio.TwimlResponse();
-    //             resp.say('hello, twilio!');
-
-    //             res.writeHead(200, {
-    //                 'Content-Type':'text/xml'
-    //             });
-    //             res.end(resp.toString());
-    //         }
-    //         else {
-    //             res.writeHead(200, {
-    //                 'Content-Type':'text/plain'
-    //             });
-    //             res.end('you are not twilio - take a hike.');
-    //         }
-    //     });
-    // }
-    // else {
-    //     res.writeHead(200, {
-    //         'Content-Type':'text/plain'
-    //     });
-    //     res.end('send a POST.');
-    // }
-
+    if (body.toLowerCase() == 'hello') {
+        // console.log('sucess: ', req.query.Body.test(/hello/))
+        twiml.message('Hi!');
+    } else if (req.body.Body.toLowerCase() == 'bye') {
+        twiml.message('Goodbye');
+    } else {
+        twiml.message('No Body param match, Twilio sends this in the request to your server.');
+    }
+    mongoose.model('Message').create({
+        from: req.body.From, 
+        body: req.body.Body,
+        amount: req.body.Body,
+    })
+    res.writeHead(200, {'Content-Type': 'text/xml'});
+    res.end(twiml.toString());
 };
 
 // Update the configured Twilio number for this demo to send all incoming
