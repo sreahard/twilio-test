@@ -69,18 +69,28 @@ exports.receiveMessageWebhook = function(req, res) {
     var body = req.body.Body
     var from = req.body.From
 
-    if (body.toLowerCase() == 'hello') {
-        // console.log('sucess: ', req.query.Body.test(/hello/))
-        twiml.message('Hi!');
-    } else if (req.body.Body.toLowerCase() == 'bye') {
-        twiml.message('Goodbye');
+    if ((/donate/).test(body.toLowerCase())) {
+        var amount = body.split(/[ ]+/).pop();
+        function isNumber(input) {
+            return !isNaN( input );
+        }
+        if (!isNumber(amount)) {
+            amount = ''
+        }
+        twiml.message('Thank you for donating to Blue Mountain Clinic. To make your donation online please follow this link: paypal.me/sreahard/' + amount);
     } else {
         twiml.message('No Body param match, Twilio sends this in the request to your server.');
     }
+    var amount = req.body.Body.split(' ')
     mongoose.model('Message').create({
         from: req.body.From, 
         body: req.body.Body,
-        amount: req.body.Body,
+        amount: amount[amount.length - 1],
+        messageSid: req.body.MessageSid,
+        fromCity: req.body.FromCity,
+        fromState: req.body.FromState,
+        fromZip: req.body.FromZip,
+        fromCountry: req.body.FromCountry,
     })
     res.writeHead(200, {'Content-Type': 'text/xml'});
     res.end(twiml.toString());
