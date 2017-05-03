@@ -1,17 +1,21 @@
 var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var flash = require('connect-flash');
 var morgan = require('morgan');
+var passport = require('passport');
 var config = require('./config');
-require('dotenv').load();
+var session = require('express-session');
 
+require('dotenv').load();
+require('./controllers/passport')(passport);
 var messageModel = require('./models/Message')
 
 // Create Express web app
 var app = express();
-app.set('view engine', 'jade');
+app.set('view engine', 'ejs');
 
 // Use morgan for HTTP request logging
 app.use(morgan('combined'));
@@ -24,18 +28,22 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.use(cookieParser());
+
 // Create and manage HTTP sessions for all requests
 app.use(session({
     secret: config.secret,
     resave: true,
     saveUninitialized: true
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Use connect-flash to persist informational messages across redirects
 app.use(flash());
 
 // Configure application routes
-require('./controllers/router')(app);
+require('./controllers/router')(app, passport);
 
 // Handle 404
 app.use(function (request, response, next) {

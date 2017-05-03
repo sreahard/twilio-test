@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <title>Blue Mountain Clinic Text to Donate</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body        { padding-top:80px; word-wrap:break-word; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-phone"></span> Messages Recieved</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
+
+    <div class="row">
+
+        <!-- LOCAL INFORMATION -->
+        <div class="col-sm-12">
+            <table>
+            <% 
+                var amounts = []
+                for(var i = 0; i < messages.length; i++) {
+                    if (messages[i].amount !== undefined || messages[i].amount !== null) { 
+                        amounts.push(messages[i].amount)
+                    }
+                    console.log(amounts)
+                %>
+                <tr> 
+                    <td style="padding: 9px;">
+                        <strong><span class="fa fa-envelope"></span> From:</strong> <%= messages[i].from %> 
+                    </td>
+                    <td style="padding: 9px;">
+                        <strong>Message:</strong> <%= messages[i].body %> 
+                    </td>
+                    <td style="padding: 9px;">
+                        <strong>Amount:</strong> <%= messages[i].amount %>
+                    </td>
+                    <td style="padding: 9px;">
+                        <strong>From:</strong> <%= messages[i].fromCity %>, <%= messages[i].fromState %>
+                    </td>
+                </tr>
+            <% } %>
+            </table>
+            <% 
+            function isNumber(input) {
+                return !isNaN( input );
+            }
+            var filterdAmounts = messages.filter(function(message) { 
+                return message.amount !== null
+            })
+            var amounts = filterdAmounts.map(function(message) {
+                return message.amount
+            })
+            console.log(amounts)           
+            function add(a, b) {
+                return a + b;
+            }
+            var sum = amounts.reduce(add, 0)
+             {%>
+                <h3>Total pledged: <%= sum %></h3>
+            <% } %>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

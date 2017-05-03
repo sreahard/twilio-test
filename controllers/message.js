@@ -43,49 +43,41 @@ exports.sendMessage = function(req, res) {
 // Show a page displaying text/picture messages that have been sent to this
 // web application, which we have stored in the database
 exports.showReceiveMessage = function(req, res) {
-    var twiml = new twilio.TwimlResponse();
-    var body = req.body.Body
-    var from = req.body.From
-    if (req.query.Body.toLowerCase() == 'hello') {
-        console.log('get sucess: ', req.query.Body.test(/hello/))
-        twiml.message('Hi!');
-    } else if (req.query.Body.toLowerCase() == 'bye') {
-        twiml.message('Goodbye');
-    } else {
-        twiml.message('No Body param match, Twilio sends this in the request to your server.');
-    }
-    mongoose.model('Message').create({
-        from: req.body.Body, 
-        body: req.body.Body,
-        SID: req.body.Body,
-    })
-    res.writeHead(200, {'Content-Type': 'text/xml'});
-    res.end(twiml.toString());
+    var Message = mongoose.model('Message');
+    Message.find({}, function(err, messages) {
+        if (err) {
+        return console.log(err);
+        } else {
+        res.render('messages.ejs', {
+            user: req.user,
+            messages: messages // get the user out of session and pass to template
+        });
+        }
+    });
 };
 
+function isNumber(input) {
+    return !isNaN( input );
+}
 // Handle a POST request from Twilio for an incoming message
 exports.receiveMessageWebhook = function(req, res) {
     var twiml = new twilio.TwimlResponse();
     var body = req.body.Body
     var from = req.body.From
 
+    var amount = body.split(/[ ]+/).pop();
     if ((/donate/).test(body.toLowerCase())) {
-        var amount = body.split(/[ ]+/).pop();
-        function isNumber(input) {
-            return !isNaN( input );
-        }
         if (!isNumber(amount)) {
             amount = ''
         }
         twiml.message('Thank you for donating to Blue Mountain Clinic. To make your donation online please follow this link: paypal.me/sreahard/' + amount);
     } else {
-        twiml.message('No Body param match, Twilio sends this in the request to your server.');
+        twiml.message('We did not understand your message, to learn more about Blue Mountain Clinic visit www.bluemountainclinic.org/. To make a donation visit paypal.me/sreahard/');
     }
-    var amount = req.body.Body.split(' ')
     mongoose.model('Message').create({
         from: req.body.From, 
         body: req.body.Body,
-        amount: amount[amount.length - 1],
+        amount: isNumber(amount) ? amount : null,
         messageSid: req.body.MessageSid,
         fromCity: req.body.FromCity,
         fromState: req.body.FromState,
